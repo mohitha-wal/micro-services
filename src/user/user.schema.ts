@@ -5,10 +5,10 @@ export class User {
   @Prop()
   username: string;
 
-  @Prop()
+  @Prop({ required: true })
   email: string;
 
-  @Prop()
+  @Prop({ required: true })
   password: string;
 
   @Prop()
@@ -20,7 +20,7 @@ export class User {
   @Prop()
   updatedAt: Date;
 
-  @Prop()
+  @Prop({ default: null })
   deletedAt: Date;
 }
 export const UserSchema = SchemaFactory.createForClass(User);
