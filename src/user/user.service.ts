@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { User } from './user.schema';
+import { User } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { UserModule } from './user.module';
@@ -24,19 +24,18 @@ export class UserService {
       throw error;
     }
   }
-  async login(body): Promise<User | null> {
+  async findUser(email: string): Promise<User | null> {
     try {
-      const userExist = await this.userModel.findOne({
-        email: body.email,
-        deletedAt: null,
-      });
-      if (
-        userExist &&
-        (await bcrypt.compare(body.password, userExist.password))
-      ) {
-        return userExist;
+      const userExist = await this.userModel
+        .findOne({
+          email,
+          deletedAt: null,
+        })
+        .lean();
+      if (!userExist) {
+        return null;
       }
-      return null;
+      return userExist;
     } catch (error) {
       throw error;
     }

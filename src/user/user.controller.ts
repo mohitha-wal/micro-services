@@ -1,29 +1,37 @@
-import { CreateUserDto } from './createUser.dto';
+import { CreateUserDto } from './dtos/createUser.dto';
 import { UserModule } from './user.module';
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
   Post,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { loginDto } from './loginUser.dto';
+import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+  ) {}
 
   @Post('register')
   async createUser(@Body() body: CreateUserDto): Promise<UserModule> {
     return this.userService.createUser(body);
   }
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async loginUser(@Body() body: loginDto): Promise<{ message: string }> {
-    const userExist = await this.userService.login(body);
-    if (!userExist) {
-      throw new BadRequestException('Invalid credentials');
-    }
-    return { message: `${userExist.username} Logged In Successfully` };
+  async loginUser(@Request() req) {
+    return this.authService.login(req.user);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }
