@@ -15,8 +15,8 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Post('register')
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<UserModule> {
-    return this.userService.createUser(createUserDto);
+  async createUser(@Body() body: CreateUserDto): Promise<UserModule> {
+    return this.userService.createUser(body);
   }
   @Post('login')
   async loginUser(@Body() body: loginDto): Promise<{ message: string }> {
