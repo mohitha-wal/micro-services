@@ -5,12 +5,14 @@ import * as mongoose from 'mongoose';
 import { UserModule } from './user.module';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
+import { TwilioService } from 'nestjs-twilio';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: mongoose.Model<User>,
     private readonly mailService: MailerService,
+    private twilioService: TwilioService,
   ) {}
   async createUser(payload): Promise<UserModule> {
     try {
@@ -49,6 +51,12 @@ export class UserService {
             <p style="font-size: 12px; color: #777;">You’re receiving this email because you signed up for YourApp. If this wasn’t you, please ignore this email.</p>
           </div>
         `,
+        });
+
+        await this.twilioService.client.messages.create({
+          body: `Hi ${payload.username}, 🎉 Welcome to MicroServicesApp! Your account is all set. Start exploring our features now! 🚀 - The MicroServicesApp Team`,
+          from: process.env.SMS_From_Phone_Number,
+          to: `+91${payload.phoneNumber}`,
         });
       }
       return newUser;
