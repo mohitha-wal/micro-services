@@ -56,7 +56,7 @@ export class UserService {
         await this.twilioService.client.messages.create({
           body: `Hi ${payload.username}, 🎉 Welcome to MicroServicesApp! Your account is all set. Start exploring our features now! 🚀 - The MicroServicesApp Team`,
           from: process.env.SMS_From_Phone_Number,
-          to: `+91${payload.phoneNumber}`,
+          to: payload.phoneNumber,
         });
       }
       return newUser;
