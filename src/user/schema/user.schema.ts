@@ -12,7 +12,7 @@ export class User {
   password: string;
 
   @Prop()
-  phoneNumber: number;
+  phoneNumber: string;
 
   @Prop()
   createdAt: Date;

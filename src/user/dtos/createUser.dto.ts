@@ -1,6 +1,5 @@
 import {
   IsEmail,
-  IsNumber,
   IsString,
   Matches,
   MinLength,
@@ -28,6 +27,10 @@ export class CreateUserDto {
   })
   readonly password: string;
 
-  @IsNumber()
-  readonly phoneNumber: number;
+  @IsString()
+  @Matches(/^\+\d{1,3}\d{7,14}$/, {
+    message:
+      'Phone number must be a valid international format starting with + and followed by digits',
+  })
+  readonly phoneNumber: string;
 }
