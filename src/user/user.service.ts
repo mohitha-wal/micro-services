@@ -6,11 +6,14 @@ import { UserModule } from './user.module';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { TwilioService } from 'nestjs-twilio';
+import { Notification } from './schema/notification.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: mongoose.Model<User>,
+    @InjectModel(Notification.name)
+    private notificationModel: mongoose.Model<Notification>,
     private readonly mailService: MailerService,
     private twilioService: TwilioService,
   ) {}
@@ -54,7 +57,7 @@ export class UserService {
         });
 
         await this.twilioService.client.messages.create({
-          body: `Hi ${payload.username}, 🎉 Welcome to MicroServicesApp! Your account is all set. Start exploring our features now! 🚀 - The MicroServicesApp Team`,
+          body: `Hi ${payload.username}, Welcome to MicroServicesApp! Your account is all set. Start exploring our features now! - The MicroServicesApp Team`,
           from: process.env.SMS_From_Phone_Number,
           to: payload.phoneNumber,
         });
@@ -78,6 +81,23 @@ export class UserService {
       return userExist;
     } catch (error) {
       throw error;
+    }
+  }
+  async saveNotification(userId: string, message: string) {
+    try {
+      await this.notificationModel.create({ userId, message });
+    } catch (err) {
+      throw err;
+    }
+  }
+  async updateLoggedIn(_id: string): Promise<void> {
+    try {
+      await this.userModel.updateOne(
+        { _id },
+        { $set: { isLoginPending: false, updatedAt: new Date() } },
+      );
+    } catch (err) {
+      throw err;
     }
   }
 }

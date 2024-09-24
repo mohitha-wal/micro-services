@@ -6,10 +6,14 @@ import { UserController } from './user.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { TwilioModule } from 'nestjs-twilio';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { NotificationSchema } from './schema/notification.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Notification', schema: NotificationSchema },
+    ]),
     forwardRef(() => AuthModule),
     TwilioModule.forRootAsync({
       imports: [ConfigModule],

@@ -26,8 +26,8 @@ export class UserController {
   }
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async loginUser(@Request() req) {
-    return this.authService.login(req.user);
+  async loginUser(@Request() req, @Body() body: { socketId: string }) {
+    return this.authService.login(req.user, body.socketId);
   }
   @UseGuards(JwtAuthGuard)
   @Get('profile')
