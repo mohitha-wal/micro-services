@@ -1,85 +1,112 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
+# Notifications Application in NestJS
+ 
+![NestJS](https://img.shields.io/badge/NestJS-7E22CE?style=for-the-badge&logo=nestjs&logoColor=white)
+![NodeMailer](https://img.shields.io/badge/NodeMailer-green?style=for-the-badge)
+![Twilio](https://img.shields.io/badge/Twilio-FF0000?style=for-the-badge&logo=twilio&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
+![Passport](https://img.shields.io/badge/Passport.js-34E27A?style=for-the-badge)
+ 
+This is a **NestJS**-based notifications application that allows users to register and log in with JWT-based authentication. The application sends success emails and SMS notifications upon successful user registration.
+ 
+## Features
+ 
+- **User Registration**: Users can sign up and, upon successful registration, they will receive:
+  - A success email (powered by **NodeMailer**).
+  - An SMS notification (powered by **Twilio**).
+- **User Login**: Secure login with **JWT** token authentication.
+- **Authentication**: JWT strategy implemented using **Passport.js**.
+ 
+## Technologies Used
+- **NestJS**: A framework for building scalable Node.js server-side applications.
+- **NodeMailer**: A module for sending emails.
+- **Twilio**: A service for sending SMS messages.
+- **Passport.js**: Authentication middleware for Node.js.
+- **Passport-JWT**: Passport strategy for authenticating with JSON Web Tokens (JWT).
+ 
+## APIs
+ 
+### 1. **Register**
+   - **Endpoint**: `/user/register`
+   - **Method**: `POST`
+   - **Request Body**: 
+     ```json
+     {
+       "username": "John Doe",
+       "email": "john@example.com",
+       "password": "your_password"
+       "phoneNumber": "your_phonenumber"
+     }
+     ```
+   - **Description**: Registers a new user and sends email and SMS upon successful registration.
+ 
+### 2. **Login**
+   - **Endpoint**: `/user/login`
+   - **Method**: `POST`
+   - **Request Body**: 
+     ```json
+     {
+       "email": "john@example.com",
+       "password": "your_password"
+     }
+     ```
+   - **Description**: Logs in an existing user and returns a JWT token.
+ 
+### 3. **Profile**
+   - **Endpoint**: `/user/profile`
+   - **Method**: `GET`
+   - **Headers**: 
+     ```json
+     {
+       "Authorization": "Bearer <access_token>"
+     }
+     ```
+   - **Description**: Retrieves the profile details of the logged-in user. You need to use the access token returned after a successful login and pass it in the `Authorization` header as a Bearer token to access this API.
+ 
+## Installation
+ 
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd notifications-app
+2. nstall the required dependencies:
+   ```bash
+   npm install
+3. Set up environment variables by creating a .env file in the root directory with the following values:
+   ```bash
+   MAIL_HOST=<your_smtp_host>
+   MAIL_PORT=<your_smtp_port>
+   MAIL_USER=<your_email>
+   MAIL_PASS=<your_email_password>
+ 
+   TWILIO_ACCOUNT_SID=<your_twilio_account_sid>
+   TWILIO_AUTH_TOKEN=<your_twilio_auth_token>
+   TWILIO_PHONE_NUMBER=<your_twilio_phone_number>
+ 
+   JWT_SECRET=<your_jwt_secret_key>
+4. Run the application:
+   ```bash
+   npm run start
+5. Open the app in your browser at http://localhost:3000.
+ 
+## Running Tests
+ 
+To run the tests for this application, use the following command:
+ 
 ```bash
-$ npm install
+npm run test
 ```
-
-## Compile and run the project
-
+ 
+## Project Structure
+ 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+src/
+|-- auth/                # Authentication logic with Passport.js and JWT
+|-- user/                # User management including registration and login
+|-- app                  # Main application folder
+|-- main.ts              # Entry point of the application
+|-- tests/               # Unit and integration tests
 ```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
+ 
 ## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+ 
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).

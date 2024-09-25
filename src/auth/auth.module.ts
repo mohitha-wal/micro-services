@@ -6,6 +6,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
+import { SocketioGateway } from '../socketio/socketio.gateway';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { ConfigService } from '@nestjs/config';
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, SocketioGateway],
   exports: [AuthService],
 })
 export class AuthModule {}

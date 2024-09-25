@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "3db47554-5dec-49f4-a492-6ce236a778ad",
+		"name": "MicroServices",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "21245222"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"Jhansi\",\n    \"password\":\"jhansi123@\",\n    \"phoneNumber\":6582763782,\n    \"email\":\"jhansi123@gmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/user/register"
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"jhansi123@gmail.com\",\n\"password\":\"jhansi123@\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/user/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoYWx1UzEyM0BnbWFpbC5jb20iLCJzdWIiOiI2NmRiMjM2ZTI4NmJlMzlmN2NmMWM4NmYiLCJpYXQiOjE3MjU4ODQ2MDcsImV4cCI6MTcyNjE0MzgwN30.EYotvkJVTmHnjNWasQP-R4LAmECbTyO-9JTdJPbN8ZA"
+					}
+				],
+				"url": "http://localhost:3000/user/profile"
+			},
+			"response": []
+		}
+	]
+}

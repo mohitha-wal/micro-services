@@ -12,7 +12,7 @@ export class User {
   password: string;
 
   @Prop()
-  phoneNumber: number;
+  phoneNumber: string;
 
   @Prop()
   createdAt: Date;
@@ -22,5 +22,8 @@ export class User {
 
   @Prop({ default: null })
   deletedAt: Date;
+
+  @Prop({ default: true })
+  isLoginPending: boolean;
 }
 export const UserSchema = SchemaFactory.createForClass(User);

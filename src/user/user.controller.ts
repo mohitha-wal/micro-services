@@ -7,6 +7,8 @@ import {
   Post,
   UseGuards,
   Request,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
@@ -26,12 +28,26 @@ export class UserController {
   }
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async loginUser(@Request() req) {
-    return this.authService.login(req.user);
+  async loginUser(@Request() req, @Body() body: { socketId: string }) {
+    return this.authService.login(req.user, body.socketId);
   }
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('notifications')
+  async getNotifications(@Request() req) {
+    const allNotifications = await this.userService.fetchNotifications(
+      req.user.userId,
+    );
+    return allNotifications ? allNotifications : [];
+  }
+  @UseGuards(JwtAuthGuard)
+  @Patch('readnotification/:id')
+  async updatedRead(@Param('id') id: string, @Request() req) {
+    const data = await this.userService.updateNotification(req.user.userId, id);
+    return data;
   }
 }
