@@ -37,7 +37,8 @@ export class UserController {
       req.user,
       body.socketId,
     );
-    res.setHeader('AuthToken', token);
+    res.setHeader('Authorization', token);
+    res.setHeader('Access-Control-Expose-Headers', 'Authorization');
     return res.status(200).json({
       success: true,
       data: user,
