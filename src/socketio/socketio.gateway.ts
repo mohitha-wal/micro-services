@@ -7,7 +7,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import * as moment from 'moment';
 import { UserService } from 'src/user/user.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -22,10 +21,10 @@ export class SocketioGateway implements OnGatewayDisconnect {
   private usersList: { [userId: string]: string } = {};
   private userService: UserService;
 
-  // @SubscribeMessage('message')
-  // handleMessage(client: any): string {
-  //   return `${client.id}`;
-  // }
+  @SubscribeMessage('message')
+  handleMessage(client: any): string {
+    return `${client.id}`;
+  }
   updateUserList(socketId: string, id: string) {
     this.usersList[id] = socketId;
   }
@@ -37,17 +36,25 @@ export class SocketioGateway implements OnGatewayDisconnect {
       delete this.usersList[userId];
     }
   }
-  sendNotification(socketId: string, userName: string): void {
-    this.server
-      .to(socketId)
-      .emit('login', `${userName} logged in successfully`);
-  }
   sendBroadCast() {
     setInterval(() => {
-      this.server.emit(
-        'service',
-        'Hello Microservice app user! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!',
-      );
+      Object.keys(this.usersList).forEach((userId) => {
+        const socketId = this.usersList[userId];
+        this.server
+          .to(socketId)
+          .emit(
+            'service',
+            `Hello ${userId}! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!`,
+          );
+      });
+      // this.usersList.map((user) => {
+      //   this.server
+      //     .to(user.socketId)
+      //     .emit(
+      //       'service',
+      //       'Hello Microservice app user! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!',
+      //     );
+      // });
     }, 300000);
   }
   @UseGuards(JwtAuthGuard)

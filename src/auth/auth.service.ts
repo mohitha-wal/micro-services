@@ -27,12 +27,10 @@ export class AuthService {
   async login(user: any, socketId: string) {
     const payload = { email: user.email, sub: user._id };
     if (user.isLoginPending) {
-      await this.userService.updateLoggedIn(user._id);
       await this.userService.saveNotification(
         user._id,
         `${user.username} logged in successfully`,
       );
-      this.socketService.sendNotification(socketId, user.username);
     }
     this.socketService.updateUserList(socketId, user._id);
     return {

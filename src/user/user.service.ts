@@ -29,6 +29,10 @@ export class UserService {
       payload.password = await bcrypt.hash(payload.password, 10);
       const newUser = await this.userModel.create(payload);
       if (newUser) {
+        await this.notificationModel.create({
+          userId: newUser._id,
+          message: `${payload.username} Registered successfully`,
+        });
         await this.mailService.sendMail({
           from: process.env.GMAIL_USER,
           to: payload.email,
@@ -37,18 +41,17 @@ export class UserService {
           <div style="font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #4CAF50;">Welcome to MicroServicesApp, ${payload.username}!</h2>
             <p>We’re excited to have you on board. Your account has been successfully created, and you're now part of the MicroServicesApp community.</p>
-      
+
             <h3>Here are your account details:</h3>
             <ul>
               <li><strong>Username:</strong> ${payload.username}</li>
               <li><strong>Email:</strong> ${payload.email}</li>
             </ul>
-      
+
             <p>To get started, log in to your dashboard and explore the features we have built for you!</p>
-    
-      
+
             <p>If you have any questions, feel free to reach out to our support team.</p>
-      
+
             <p>Cheers,</p>
             <p>The MicroServicesApp Team</p>
             <hr />
@@ -87,14 +90,8 @@ export class UserService {
   async saveNotification(userId: string, message: string) {
     try {
       await this.notificationModel.create({ userId, message });
-    } catch (err) {
-      throw err;
-    }
-  }
-  async updateLoggedIn(_id: string): Promise<void> {
-    try {
       await this.userModel.updateOne(
-        { _id },
+        { _id: userId },
         { $set: { isLoginPending: false, updatedAt: new Date() } },
       );
     } catch (err) {

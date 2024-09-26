@@ -7,8 +7,6 @@ import {
   Post,
   UseGuards,
   Request,
-  Patch,
-  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
