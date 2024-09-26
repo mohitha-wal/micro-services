@@ -44,10 +44,6 @@ export class SocketioGateway implements OnGatewayDisconnect {
             `Hello ${userDetails.username}! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!`,
           );
       });
-      // this.server.emit(
-      //   'service',
-      //   'Hello Microservice app user! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!',
-      // );
     }, 300000);
   }
   @SubscribeMessage('readnotification')
