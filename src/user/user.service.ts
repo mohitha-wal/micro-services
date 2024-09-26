@@ -82,6 +82,30 @@ export class UserService {
             createdAt: 0,
             deletedAt: 0,
             updatedAt: 0,
+            phoneNumber: 0,
+          },
+        )
+        .lean();
+      if (!userExist) {
+        return null;
+      }
+      return userExist;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async findUserDetails(_id: string): Promise<User | null> {
+    try {
+      const userExist = await this.userModel
+        .findOne(
+          {
+            _id,
+            deletedAt: null,
+          },
+          {
+            createdAt: 0,
+            deletedAt: 0,
+            updatedAt: 0,
             isLoginPending: 0,
             phoneNumber: 0,
           },

@@ -34,20 +34,21 @@ export class SocketioGateway implements OnGatewayDisconnect {
   }
   sendBroadCast() {
     setInterval(() => {
-      // Object.keys(this.usersList).forEach((userId) => {
-      //   const socketId = this.usersList[userId];
-      //   this.server
-      //     .to(socketId)
-      //     .emit(
-      //       'service',
-      //       `Hello ${userId}! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!`,
-      //     );
-      // });
-      this.server.emit(
-        'service',
-        'Hello Microservice app user! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!',
-      );
-    }, 300000);
+      Object.keys(this.usersList).forEach(async (userId) => {
+        const socketId = this.usersList[userId];
+        const userDetails = await this.userService.findUserDetails(userId);
+        this.server
+          .to(socketId)
+          .emit(
+            'service',
+            `Hello ${userDetails.username}! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!`,
+          );
+      });
+      // this.server.emit(
+      //   'service',
+      //   'Hello Microservice app user! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!',
+      // );
+    }, 3000000);
   }
   @SubscribeMessage('readnotification')
   async updatedRead(@MessageBody() body: { notificationId: string }) {
