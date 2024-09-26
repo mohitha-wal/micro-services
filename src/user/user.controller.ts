@@ -44,10 +44,4 @@ export class UserController {
     );
     return allNotifications ? allNotifications : [];
   }
-  @UseGuards(JwtAuthGuard)
-  @Patch('readnotification/:id')
-  async updatedRead(@Param('id') id: string, @Request() req) {
-    const data = await this.userService.updateNotification(req.user.userId, id);
-    return data;
-  }
 }

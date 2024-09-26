@@ -32,8 +32,9 @@ export class AuthService {
         user._id,
         `${user.username} logged in successfully`,
       );
-      this.socketService.sendNotification(socketId, user.username, user._id);
+      this.socketService.sendNotification(socketId, user.username);
     }
+    this.socketService.updateUserList(socketId, user._id);
     return {
       access_token: this.jwtService.sign(payload),
     };
