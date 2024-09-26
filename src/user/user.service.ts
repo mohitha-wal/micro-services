@@ -7,7 +7,6 @@ import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { TwilioService } from 'nestjs-twilio';
 import { Notification } from './schema/notification.schema';
-import { UpdateWriteOpResult } from 'mongoose';
 
 @Injectable()
 export class UserService {
@@ -117,15 +116,10 @@ export class UserService {
       throw err;
     }
   }
-  async updateNotification(_id: string): Promise<UpdateWriteOpResult> {
-    try {
-      const result = await this.notificationModel.updateOne(
-        { _id },
-        { $set: { isRead: true, updatedAt: new Date() } },
-      );
-      return result;
-    } catch (err) {
-      throw err;
-    }
+  async updateNotification(_id: string): Promise<void> {
+    await this.notificationModel.updateOne(
+      { _id },
+      { $set: { isRead: true, updatedAt: new Date() } },
+    );
   }
 }

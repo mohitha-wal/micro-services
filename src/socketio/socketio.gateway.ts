@@ -1,25 +1,21 @@
 import {
-  ConnectedSocket,
   MessageBody,
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import { UserService } from 'src/user/user.service';
-import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @WebSocketGateway({ cors: true })
 export class SocketioGateway implements OnGatewayDisconnect {
-  constructor() {
+  constructor(private userService: UserService) {
     this.sendBroadCast();
   }
   @WebSocketServer()
   server: Server;
   private usersList: { [userId: string]: string } = {};
-  private userService: UserService;
 
   @SubscribeMessage('message')
   handleMessage(client: any): string {
@@ -53,21 +49,8 @@ export class SocketioGateway implements OnGatewayDisconnect {
       );
     }, 300000);
   }
-  // @UseGuards(JwtAuthGuard)
   @SubscribeMessage('readnotification')
-  async updatedRead(
-    @MessageBody() body: { notificationId: string },
-    @ConnectedSocket() client: Socket,
-  ) {
-    try {
-      // const userId = client.handshake.auth.userId;
-      await this.userService.updateNotification(body.notificationId);
-      // client.emit('notificationUpdated', { success: true, data });
-    } catch (err) {
-      client.emit('notificationUpdated', {
-        success: false,
-        error: err.message,
-      });
-    }
+  async updatedRead(@MessageBody() body: { notificationId: string }) {
+    await this.userService.updateNotification(body.notificationId);
   }
 }
