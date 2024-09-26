@@ -48,7 +48,7 @@ export class SocketioGateway implements OnGatewayDisconnect {
       //   'service',
       //   'Hello Microservice app user! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!',
       // );
-    }, 3000000);
+    }, 300000);
   }
   @SubscribeMessage('readnotification')
   async updatedRead(@MessageBody() body: { notificationId: string }) {
