@@ -74,10 +74,19 @@ export class UserService {
   async findUser(email: string): Promise<User | null> {
     try {
       const userExist = await this.userModel
-        .findOne({
-          email,
-          deletedAt: null,
-        })
+        .findOne(
+          {
+            email,
+            deletedAt: null,
+          },
+          {
+            createdAt: 0,
+            deletedAt: 0,
+            updatedAt: 0,
+            isLoginPending: 0,
+            phoneNumber: 0,
+          },
+        )
         .lean();
       if (!userExist) {
         return null;
@@ -108,13 +117,10 @@ export class UserService {
       throw err;
     }
   }
-  async updateNotification(
-    userId: string,
-    _id: string,
-  ): Promise<UpdateWriteOpResult> {
+  async updateNotification(_id: string): Promise<UpdateWriteOpResult> {
     try {
       const result = await this.notificationModel.updateOne(
-        { userId, _id },
+        { _id },
         { $set: { isRead: true, updatedAt: new Date() } },
       );
       return result;

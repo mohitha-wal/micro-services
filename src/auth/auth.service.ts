@@ -24,7 +24,10 @@ export class AuthService {
     }
     return null;
   }
-  async login(user: any, socketId: string) {
+  async login(
+    user: any,
+    socketId: string,
+  ): Promise<{ token: string; user: Partial<User> }> {
     const payload = { email: user.email, sub: user._id };
     if (user.isLoginPending) {
       await this.userService.saveNotification(
@@ -34,7 +37,8 @@ export class AuthService {
     }
     this.socketService.updateUserList(socketId, user._id);
     return {
-      access_token: this.jwtService.sign(payload),
+      token: this.jwtService.sign(payload),
+      user,
     };
   }
 }

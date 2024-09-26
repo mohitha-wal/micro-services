@@ -38,38 +38,31 @@ export class SocketioGateway implements OnGatewayDisconnect {
   }
   sendBroadCast() {
     setInterval(() => {
-      Object.keys(this.usersList).forEach((userId) => {
-        const socketId = this.usersList[userId];
-        this.server
-          .to(socketId)
-          .emit(
-            'service',
-            `Hello ${userId}! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!`,
-          );
-      });
-      // this.usersList.map((user) => {
+      // Object.keys(this.usersList).forEach((userId) => {
+      //   const socketId = this.usersList[userId];
       //   this.server
-      //     .to(user.socketId)
+      //     .to(socketId)
       //     .emit(
       //       'service',
-      //       'Hello Microservice app user! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!',
+      //       `Hello ${userId}! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!`,
       //     );
       // });
+      this.server.emit(
+        'service',
+        'Hello Microservice app user! If you have any feedback or complaints, please mail us at support@gmail.com. We value your input!',
+      );
     }, 300000);
   }
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @SubscribeMessage('readnotification')
   async updatedRead(
     @MessageBody() body: { notificationId: string },
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const userId = client.handshake.auth.userId;
-      const data = await this.userService.updateNotification(
-        body.notificationId,
-        userId,
-      );
-      client.emit('notificationUpdated', { success: true, data });
+      // const userId = client.handshake.auth.userId;
+      await this.userService.updateNotification(body.notificationId);
+      // client.emit('notificationUpdated', { success: true, data });
     } catch (err) {
       client.emit('notificationUpdated', {
         success: false,
