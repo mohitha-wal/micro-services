@@ -5,6 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import * as mongoose from 'mongoose';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ChatModule } from './chat/chat.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -21,8 +23,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
       },
     }),
     MongooseModule.forRoot(process.env.DB_URL),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
+    ChatModule,
   ],
   exports: [UserModule],
 })

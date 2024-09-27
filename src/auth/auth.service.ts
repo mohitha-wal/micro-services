@@ -3,14 +3,14 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/schema/user.schema';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
-import { SocketioGateway } from 'src/socketio/socketio.gateway';
+import { ChatGateway } from 'src/chat/chat.gateway';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private socketService: SocketioGateway,
+    private chatService: ChatGateway,
   ) {}
 
   async validateUser(
@@ -35,7 +35,7 @@ export class AuthService {
         `${user.username} logged in successfully`,
       );
     }
-    this.socketService.updateUserList(socketId, user._id);
+    this.chatService.updateUserList(socketId, user._id);
     return {
       token: this.jwtService.sign(payload),
       user,

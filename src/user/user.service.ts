@@ -70,6 +70,22 @@ export class UserService {
       throw error;
     }
   }
+  async findUserById(userId: string): Promise<User | null> {
+    try {
+      const userDetails = await this.userModel
+        .findById({
+          _id: userId,
+          deletedAt: null,
+        })
+        .lean();
+      if (!userDetails) {
+        return null;
+      }
+      return userDetails;
+    } catch (error) {
+      throw error;
+    }
+  }
   async findUser(email: string): Promise<User | null> {
     try {
       const userExist = await this.userModel
@@ -115,6 +131,25 @@ export class UserService {
         return null;
       }
       return userExist;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const now = new Date();
+      const startOfRange = new Date(now.setDate(now.getDate() - 1));
+      startOfRange.setHours(22, 0, 0, 0);
+      const endOfRange = new Date();
+      endOfRange.setHours(11, 30, 0, 0);
+      return this.userModel
+        .find({
+          createdAt: {
+            $gte: startOfRange,
+            $lt: endOfRange,
+          },
+        })
+        .lean();
     } catch (error) {
       throw error;
     }
