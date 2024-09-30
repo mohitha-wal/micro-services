@@ -235,7 +235,7 @@ export class ChatGateway implements OnGatewayDisconnect {
     });
     const privateMessageServiceHistory =
       await this.privateMessageService.getPrivateMessageHistory(roomName);
-    client.emit('privateMessage-History', privateMessageServiceHistory);
+    client.emit('user-to-user-private-chat-history', privateMessageServiceHistory);
 
     this.server
       .to(roomName)
