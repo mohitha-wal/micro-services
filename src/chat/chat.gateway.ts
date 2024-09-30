@@ -32,9 +32,9 @@ export class ChatGateway implements OnGatewayDisconnect {
   }
   // Separate event for authentication
   @SubscribeMessage('Previous-History')
-  async handleAuthenticate(client: Socket) {
+  async handleAuthenticate(client: Socket, payload) {
     try {
-      let token = client.handshake.headers.autherization;
+      let token = payload.token;
       // Handle case where token could be a string or string[]
       if (Array.isArray(token)) {
         token = token[0]; // If it's an array, use the first element
@@ -192,6 +192,19 @@ export class ChatGateway implements OnGatewayDisconnect {
     this.server
       .to(roomName)
       .emit('message-to-room', `${message} from userId: ${userId}`);
+  }
+
+  @SubscribeMessage('user-id-for-private-chat')
+  async userPrivateChatHistory(client: Socket, payload:any) {
+    const senderId = this.socketToUserIdMap.get(client.id);
+    if (!senderId) {
+      client.disconnect();
+      return;
+    }
+    const roomName = this.getRoomName(senderId, payload.recipientId);
+    const privateMessageServiceHistory =
+      await this.privateMessageService.getPrivateMessageHistory(roomName);
+    client.emit('user-to-user-private-chat-history', privateMessageServiceHistory);
   }
 
   @SubscribeMessage('PrivateMessage')
