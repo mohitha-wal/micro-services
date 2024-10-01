@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { PrivateMessage } from './privateMessage.schema';
+
+interface PrivateMessageResponse {
+  _id: Types.ObjectId;
+  senderId: string;
+  message: string;
+}
 
 @Injectable()
 export class PrivateMessageService {
@@ -9,10 +15,12 @@ export class PrivateMessageService {
     @InjectModel(PrivateMessage.name)
     private privateMessageModel: Model<PrivateMessage>,
   ) {}
-
-  async savePrivateMessage(payload): Promise<PrivateMessage> {
+  
+  async savePrivateMessage(payload): Promise<PrivateMessageResponse> {
     const newPrivateMessage = new this.privateMessageModel(payload);
-    return newPrivateMessage.save();
+    const savedMessage = await newPrivateMessage.save();
+    const { _id, senderId, message } = savedMessage.toObject();
+    return { _id, senderId, message };
   }
 
   async getPrivateMessageHistory(roomName: string): Promise<any[]> {

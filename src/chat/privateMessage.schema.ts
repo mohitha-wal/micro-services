@@ -12,7 +12,7 @@ export class PrivateMessage {
   recipientId: string;
 
   @Prop({ required: true })
-  message: String;
+  message: string;
 
   @Prop({ required: true, default: true })
   unRead: boolean;
