@@ -215,31 +215,31 @@ export class ChatGateway implements OnGatewayDisconnect {
       return;
     }
 
-    const recipientId = this.socketToUserIdMap.get(payload.recipientId);
-    if (!recipientId) {
-      console.error(
-        `Recipient with socketId ${payload.recipientId} not found.`,
-      );
-      return;
-    }
+    // Prioritize getting recipientId from socketId, fallback to payload.recipientId
+    const recipientId = this.socketToUserIdMap.get(payload.socketId) || payload.recipientId;
 
+    // Get room name and ensure both sender and recipient join the room
     const roomName = this.getRoomName(senderId, recipientId);
     client.join(roomName);
-    this.server.sockets.to(payload.recipientId).socketsJoin(roomName);
+    
+    if (payload.socketId) {
+      this.server.to(payload.socketId).socketsJoin(roomName);
+    }
 
+    // Save private message and broadcast it to the room
     await this.privateMessageService.savePrivateMessage({
       roomName,
       senderId,
       recipientId,
       message: payload.message,
     });
-    const privateMessageServiceHistory =
-      await this.privateMessageService.getPrivateMessageHistory(roomName);
-    client.emit('user-to-user-private-chat-history', privateMessageServiceHistory);
 
-    this.server
-      .to(roomName)
-      .emit('private-message', { senderId, message: payload.message });
+    // Fetch and emit private chat history only once
+    const privateMessageHistory = await this.privateMessageService.getPrivateMessageHistory(roomName);
+    client.emit('user-to-user-private-chat-history', privateMessageHistory);
+
+    // Broadcast the new message to the room
+    this.server.to(roomName).emit('private-message', { senderId, message: payload.message });
   }
 
   private getRoomName(senderId: string, recipientId: string): string {
