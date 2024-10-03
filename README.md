@@ -5,23 +5,31 @@
 ![Twilio](https://img.shields.io/badge/Twilio-FF0000?style=for-the-badge&logo=twilio&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
 ![Passport](https://img.shields.io/badge/Passport.js-34E27A?style=for-the-badge)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![Mongoose](https://img.shields.io/badge/Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white)
  
-This is a **NestJS**-based notifications application that allows users to register and log in with JWT-based authentication. The application sends success emails and SMS notifications upon successful user registration.
- 
+This is a **NestJS**-based notifications service application that allows users to register and log in with JWT-based authentication. The application sends a success email, SMS notification, and push notification upon successful user registration. Users also receive a login success push notification upon their first login. Additionally, the service supports real-time notifications every 5 minutes. It also includes private and group chat functionality, with the ability to store and retrieve previous chat history for users.
+
+
 ## Features
  
 - **User Registration**: Users can sign up and, upon successful registration, they will receive:
   - A success email (powered by **NodeMailer**).
   - An SMS notification (powered by **Twilio**).
-- **User Login**: Secure login with **JWT** token authentication.
+  - A success notification via push notifications
+- **User Login**: Users can log in securely with **JWT** token authentication and will receive:
+  - A login success notification via push notifications.
 - **Authentication**: JWT strategy implemented using **Passport.js**.
- 
+- **Real-Time Notifications**: Users receive real-time notifications through **WebSockets** for events occurring every 5 minutes.
+
 ## Technologies Used
 - **NestJS**: A framework for building scalable Node.js server-side applications.
+- **Mongoose**: For MongoDB database management and modeling.
 - **NodeMailer**: A module for sending emails.
 - **Twilio**: A service for sending SMS messages.
 - **Passport.js**: Authentication middleware for Node.js.
 - **Passport-JWT**: Passport strategy for authenticating with JSON Web Tokens (JWT).
+- **Socket.IO**: Real-time, bidirectional, and event-based communication.
  
 ## APIs
  
@@ -33,7 +41,7 @@ This is a **NestJS**-based notifications application that allows users to regist
      {
        "username": "John Doe",
        "email": "john@example.com",
-       "password": "your_password"
+       "password": "your_password",
        "phoneNumber": "your_phonenumber"
      }
      ```
@@ -61,6 +69,7 @@ This is a **NestJS**-based notifications application that allows users to regist
      }
      ```
    - **Description**: Retrieves the profile details of the logged-in user. You need to use the access token returned after a successful login and pass it in the `Authorization` header as a Bearer token to access this API.
+
  
 ## Installation
  
@@ -101,8 +110,9 @@ npm run test
 ```bash
 src/
 |-- auth/                # Authentication logic with Passport.js and JWT
+|-- chat/                # Web Sockets emits and chats
 |-- user/                # User management including registration and login
-|-- app                  # Main application folder
+|-- app.module.ts        # Main application file
 |-- main.ts              # Entry point of the application
 |-- tests/               # Unit and integration tests
 ```

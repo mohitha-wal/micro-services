@@ -7,7 +7,6 @@ import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { TwilioService } from 'nestjs-twilio';
 import { Notification } from './schema/notification.schema';
-import { UpdateWriteOpResult } from 'mongoose';
 
 @Injectable()
 export class UserService {
@@ -29,6 +28,10 @@ export class UserService {
       payload.password = await bcrypt.hash(payload.password, 10);
       const newUser = await this.userModel.create(payload);
       if (newUser) {
+        await this.notificationModel.create({
+          userId: newUser._id,
+          message: `${payload.username} Registered successfully`,
+        });
         await this.mailService.sendMail({
           from: process.env.GMAIL_USER,
           to: payload.email,
@@ -37,18 +40,17 @@ export class UserService {
           <div style="font-family: Arial, sans-serif; color: #333;">
             <h2 style="color: #4CAF50;">Welcome to MicroServicesApp, ${payload.username}!</h2>
             <p>We’re excited to have you on board. Your account has been successfully created, and you're now part of the MicroServicesApp community.</p>
-      
+
             <h3>Here are your account details:</h3>
             <ul>
               <li><strong>Username:</strong> ${payload.username}</li>
               <li><strong>Email:</strong> ${payload.email}</li>
             </ul>
-      
+
             <p>To get started, log in to your dashboard and explore the features we have built for you!</p>
-    
-      
+
             <p>If you have any questions, feel free to reach out to our support team.</p>
-      
+
             <p>Cheers,</p>
             <p>The MicroServicesApp Team</p>
             <hr />
@@ -68,13 +70,37 @@ export class UserService {
       throw error;
     }
   }
+  async findUserById(userId: string): Promise<User | null> {
+    try {
+      const userDetails = await this.userModel
+        .findById({
+          _id: userId,
+          deletedAt: null,
+        })
+        .lean();
+      if (!userDetails) {
+        return null;
+      }
+      return userDetails;
+    } catch (error) {
+      throw error;
+    }
+  }
   async findUser(email: string): Promise<User | null> {
     try {
       const userExist = await this.userModel
-        .findOne({
-          email,
-          deletedAt: null,
-        })
+        .findOne(
+          {
+            email,
+            deletedAt: null,
+          },
+          {
+            createdAt: 0,
+            deletedAt: 0,
+            updatedAt: 0,
+            phoneNumber: 0,
+          },
+        )
         .lean();
       if (!userExist) {
         return null;
@@ -84,17 +110,55 @@ export class UserService {
       throw error;
     }
   }
+  async findUserDetails(_id: string): Promise<User | null> {
+    try {
+      const userExist = await this.userModel
+        .findOne(
+          {
+            _id,
+            deletedAt: null,
+          },
+          {
+            createdAt: 0,
+            deletedAt: 0,
+            updatedAt: 0,
+            isLoginPending: 0,
+            phoneNumber: 0,
+          },
+        )
+        .lean();
+      if (!userExist) {
+        return null;
+      }
+      return userExist;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const now = new Date();
+      const startOfRange = new Date(now.setDate(now.getDate() - 1));
+      startOfRange.setHours(22, 0, 0, 0);
+      const endOfRange = new Date();
+      endOfRange.setHours(11, 30, 0, 0);
+      return this.userModel
+        .find({
+          createdAt: {
+            $gte: startOfRange,
+            $lt: endOfRange,
+          },
+        })
+        .lean();
+    } catch (error) {
+      throw error;
+    }
+  }
   async saveNotification(userId: string, message: string) {
     try {
       await this.notificationModel.create({ userId, message });
-    } catch (err) {
-      throw err;
-    }
-  }
-  async updateLoggedIn(_id: string): Promise<void> {
-    try {
       await this.userModel.updateOne(
-        { _id },
+        { _id: userId },
         { $set: { isLoginPending: false, updatedAt: new Date() } },
       );
     } catch (err) {
@@ -111,18 +175,10 @@ export class UserService {
       throw err;
     }
   }
-  async updateNotification(
-    userId: string,
-    _id: string,
-  ): Promise<UpdateWriteOpResult> {
-    try {
-      const result = await this.notificationModel.updateOne(
-        { userId, _id },
-        { $set: { isRead: true, updatedAt: new Date() } },
-      );
-      return result;
-    } catch (err) {
-      throw err;
-    }
+  async updateNotification(_id: string): Promise<void> {
+    await this.notificationModel.updateOne(
+      { _id },
+      { $set: { isRead: true, updatedAt: new Date() } },
+    );
   }
 }

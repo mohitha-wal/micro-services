@@ -7,13 +7,13 @@ import {
   Post,
   UseGuards,
   Request,
-  Patch,
-  Param,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Response } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -28,8 +28,21 @@ export class UserController {
   }
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async loginUser(@Request() req, @Body() body: { socketId: string }) {
-    return this.authService.login(req.user, body.socketId);
+  async loginUser(
+    @Request() req,
+    @Body() body: { socketId: string },
+    @Res() res: Response,
+  ) {
+    const { token, user } = await this.authService.login(
+      req.user,
+      body.socketId,
+    );
+    res.setHeader('Authorization', token);
+    res.setHeader('Access-Control-Expose-Headers', 'Authorization');
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
   }
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -43,11 +56,5 @@ export class UserController {
       req.user.userId,
     );
     return allNotifications ? allNotifications : [];
-  }
-  @UseGuards(JwtAuthGuard)
-  @Patch('readnotification/:id')
-  async updatedRead(@Param('id') id: string, @Request() req) {
-    const data = await this.userService.updateNotification(req.user.userId, id);
-    return data;
   }
 }

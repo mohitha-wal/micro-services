@@ -6,11 +6,12 @@ import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
-import { SocketioGateway } from '../socketio/socketio.gateway';
+import { ChatModule } from 'src/chat/chat.module';
 
 @Module({
   imports: [
     forwardRef(() => UserModule),
+    forwardRef(() => ChatModule),
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -20,7 +21,7 @@ import { SocketioGateway } from '../socketio/socketio.gateway';
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, SocketioGateway],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
